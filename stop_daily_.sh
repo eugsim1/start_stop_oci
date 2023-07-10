@@ -71,13 +71,13 @@ time_monitored)
 
 EOF
 
-export DATA_FILE=data/2stop/instances_2stop_weekend.db
+export DATA_FILE=data/2stop/all_instances_2stop_tenancy.csv
 
 sed 's/FILE_DATA/$DATA_FILE/g' -i data/2stop/create_ctl_instances_2stop_file.ctl
 
-data/2stop/create_ctl_instances_2stop_file.ctl data/2stop/Compute_nodes.ctl
 
-sqlldr $MONITOR_DB_USER/$MONITOR_DB_PASSWORD@$MONITOR_DB CONTROL=data/2stop/Compute_nodes.ctl \
+
+sqlldr $MONITOR_DB_USER/$MONITOR_DB_PASSWORD@$MONITOR_DB CONTROL=data/2stop/create_ctl_instances_2stop_file.ctl \
 bad=data/2stop/Computes_nodes_${date_rep}.bad \
 log=data/2stop/Computes_nodes_${date_rep}.log
 
