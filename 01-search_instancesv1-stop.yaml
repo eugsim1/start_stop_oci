@@ -1,0 +1,47 @@
+
+---
+- name : List instance with type = Structured
+  collections:
+    - oracle.oci
+  connection: local
+  hosts: localhost
+  vars_files:
+   - search_instancesv1-stop.yaml
+  tasks:
+
+            - name: List instance  
+              oci_resource_search_resource_facts:
+                query: query   instance resources     where ( lifeCycleState = 'RUNNING' ) 
+                type: Structured
+                region: "{{ region }}"
+              register: result
+              tags:
+               - run-instance
+
+
+            - name: Dump result from List instance
+              debug:
+                msg: '{{ result }}'
+              tags:
+               - dbg-instance
+
+            - name: Create RAW file result from List instance
+              copy:
+               dest: "{{ dest }}/all_running_instances_2stop_{{region}}_raw_{{date_monitored}}.csv"
+               content: "{{ result }}"
+              tags:
+                - write-instance-raw
+
+            - name: Create file result from List instance
+              copy:
+               dest: "{{ dest }}/all_region_{{region}}_2stop_instances_report_{{date_monitored}}_form.csv"
+               content: |
+                {% for h in result.resources %}
+                {{region}}|{{ h.display_name }}|{{ h.identifier  }}|{{ h.compartment_id  }}|{{ h.time_created }}|{{ h.defined_tags|to_json }}|{{ h.lifecycle_state }}|{{h.freeform_tags| to_json}}|{{date_monitored}}
+                {% endfor %}
+              tags:
+                - write-instance-raw-csv
+
+
+##### not_used
+

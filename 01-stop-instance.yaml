@@ -1,0 +1,28 @@
+
+---
+- name : Stop instances
+  collections:
+    - oracle.oci
+  connection: local
+  hosts: localhost
+  vars_files:
+   - stop_instance.yaml
+  tasks:
+  
+            - name: Perform action change on instance
+              oci_compute_instance_actions:
+                compartment_id: "{{ item.split('|')[2] }}"
+                instance_id: "{{ item.split('|')[1] }}"
+                region: "{{ item.split('|')[0] }}"
+                action: "{{ action }}"
+              with_items: "{{ lookup('file', '{{ instance_2stop }}').splitlines() }}"
+              register: result
+              tags:
+               - stop-instance
+
+            - name: Dump result from List instance
+              debug:
+                msg: '{{ result }}'
+              tags:
+               - dbg-stop-instance
+

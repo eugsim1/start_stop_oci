@@ -1,0 +1,10 @@
+##### global var
+tenancy: $tenancy
+compartment_id: 
+local_dir:  
+cur_cidr:  
+users:  
+region:  
+date_monitored:
+free_form_tags: 
+dest:  

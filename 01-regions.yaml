@@ -1,0 +1,39 @@
+
+---
+- name : List summary of existing regions 
+  collections:
+    - oracle.oci
+  connection: local
+  hosts: localhost
+  vars_files: 
+   - defaults_regions.yaml
+  tasks:
+
+            - name: List region_subscriptions
+              oci_identity_region_subscription_facts:
+                tenancy_id: "{{ tenancy }}"
+              register: result
+                               
+            - name: Dump result from region_subscriptions
+              debug: 
+                msg: '{{result}}' 
+              tags:
+               - dump-region_subscriptions 
+
+            - name:                   
+              copy:
+               dest: "{{local_dir}}/configuration_data/regions_{{ansible_date_time.iso8601}}.csv"
+               content: "{{ result }}"
+              tags:
+                - dump-region_subscriptions
+                
+            - name: Create List region_subscriptions                
+              copy:
+               dest: "{{local_dir}}/configuration_data/regions_form.csv"
+               content: | 
+                {% for h in result.region_subscriptions %}
+                {{ h.region_name }}
+                {% endfor %}   
+              tags:
+                - dump-region_subscriptions
+
